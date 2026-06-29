@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>飲み食い処 万年 ご注文</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500&display=swap');
+
+  :root {
+    --bg:      #1a1008;
+    --bg2:     #241508;
+    --gold:    #c89450;
+    --dgold:   #8b6430;
+    --cream:   #f5e8c8;
+    --ltcream: #e8d5a8;
+    --border:  #3a2510;
+    --red:     #c0392b;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Noto Serif JP', serif;
+    min-height: 100vh;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    background: linear-gradient(135deg, #2e1a08 0%, #1a1008 100%);
+    border-bottom: 2px solid var(--dgold);
+    text-align: center;
+    padding: 18px 16px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  }
+  header .kana {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 10px; letter-spacing: 6px; color: var(--dgold);
+    margin-bottom: 4px;
+  }
+  header h1 { font-size: 26px; letter-spacing: 10px; color: var(--cream); line-height: 1; }
+  header .sub { font-family: 'Noto Sans JP', sans-serif; font-size: 10px;
+    letter-spacing: 3px; color: var(--gold); margin-top: 4px; }
+
+  /* ===== LAYOUT ===== */
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 0;
+    max-width: 1100px;
+    margin: 0 auto;
+    min-height: calc(100vh - 90px);
+  }
+
+  /* ===== MENU SIDE ===== */
+  .menu-side {
+    padding: 20px 20px 40px;
+    border-right: 1px solid var(--border);
+  }
+
+  .section { margin-bottom: 28px; }
+
+  .section-title {
+    font-size: 14px; font-weight: 700; color: var(--gold);
+    letter-spacing: 4px;
+    border-bottom: 1px solid var(--dgold);
+    padding-bottom: 6px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::before { content: '◈'; font-size: 9px; color: var(--dgold); }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 4px;
+    border-bottom: 1px dotted var(--border);
+    gap: 8px;
+  }
+  .menu-item:last-child { border-bottom: none; }
+
+  .item-info { flex: 1; }
+  .item-name { font-size: 13px; color: var(--ltcream); }
+  .item-price { font-family: 'Noto Sans JP', sans-serif;
+    font-size: 12px; color: var(--gold); margin-top: 2px; }
+
+  .qty-ctrl {
+    display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+  }
+  .qty-btn {
+    width: 30px; height: 30px;
+    background: var(--bg2); border: 1px solid var(--dgold);
+    color: var(--gold); font-size: 18px; font-weight: 300;
+    border-radius: 50%; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, transform 0.1s;
+    line-height: 1; padding: 0;
+    font-family: sans-serif;
+  }
+  .qty-btn:hover { background: var(--dgold); color: var(--bg); }
+  .qty-btn:active { transform: scale(0.92); }
+  .qty-num {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px; color: var(--cream);
+    min-width: 22px; text-align: center;
+  }
+
+  /* ===== ORDER SIDE ===== */
+  .order-side {
+    position: sticky;
+    top: 90px;
+    height: calc(100vh - 90px);
+    overflow-y: auto;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: #1e1208;
+  }
+
+  .order-title {
+    font-size: 13px; font-weight: 700; color: var(--gold);
+    letter-spacing: 3px; border-bottom: 1px solid var(--dgold);
+    padding-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .order-title::before { content: '📋'; font-size: 12px; }
+
+  #order-list { flex: 1; min-height: 80px; }
+
+  .order-empty {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 12px; color: var(--dgold);
+    text-align: center; padding: 24px 0;
+    letter-spacing: 1px;
+  }
+
+  .order-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 6px 0;
+    border-bottom: 1px dotted var(--border);
+    font-size: 11.5px;
+    gap: 6px;
+  }
+  .order-row-name { color: var(--ltcream); flex: 1; }
+  .order-row-qty  { color: var(--dgold); font-family: 'Noto Sans JP', sans-serif;
+    font-size: 11px; white-space: nowrap; }
+  .order-row-sub  { color: var(--gold); font-family: 'Noto Sans JP', sans-serif;
+    font-size: 12px; white-space: nowrap; }
+
+  .total-box {
+    background: var(--bg2);
+    border: 1px solid var(--dgold);
+    border-radius: 4px;
+    padding: 14px 16px;
+  }
+  .total-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 4px 0;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+  .total-label { font-size: 11px; color: var(--dgold); letter-spacing: 1px; }
+  .total-val   { font-size: 12px; color: var(--ltcream); }
+  .total-divider { border: none; border-top: 1px solid var(--border); margin: 6px 0; }
+  .grand-label { font-size: 13px; color: var(--gold); font-weight: 700; letter-spacing: 2px; }
+  .grand-val   { font-size: 22px; color: var(--cream); font-weight: 700; }
+
+  .btn-reset {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--dgold);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 12px; letter-spacing: 2px;
+    border-radius: 3px; cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn-reset:hover { background: var(--border); color: var(--cream); }
+
+  .btn-print {
+    width: 100%;
+    padding: 11px;
+    background: var(--dgold);
+    border: none;
+    color: var(--bg);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px; font-weight: 700; letter-spacing: 2px;
+    border-radius: 3px; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-print:hover { background: var(--gold); }
+
+  /* ===== MOBILE ===== */
+  @media (max-width: 700px) {
+    .layout { 
+      display: flex; 
+      flex-direction: column-reverse; 
+    }
+    .order-side {
+      position: sticky;
+      top: 44px; 
+      height: auto;
+      max-height: 45vh; 
+      border-top: none;
+      border-bottom: 2px solid var(--dgold);
+      z-index: 99;
+      background: #1e1208;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+    }
+    #order-list {
+      overflow-y: auto; 
+      max-height: 18vh; 
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      background: #150b04;
+      border-radius: 3px;
+      margin-bottom: 4px;
+    }
+    .menu-side { 
+      padding-top: 10px;
+      padding-bottom: 40px; 
+    }
+    header {
+      padding: 10px 16px 8px; 
+    }
+    header h1 { font-size: 20px; }
+  }
+
+  /* ===== PRINT ===== */
+  @media print {
+    header, .menu-side { display: none; }
+    .layout { display: block; }
+    .order-side { 
+      position: static; 
+      height: auto; 
+      max-height: none; 
+      padding: 0; 
+      background: transparent; 
+    }
+    /* 印刷時は注文一覧の枠制限をなくし、すべての注文を縦に広げて表示する */
+    #order-list { 
+      max-height: none !important; 
+      overflow: visible !important; 
+      border: none; 
+      padding: 0; 
+      background: transparent;
+    }
+    .order-row {
+      border-bottom: 1px dashed #666;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kana">の み ぐ い ど こ ろ</div>
+  <h1>万 年</h1>
+  <div class="sub">ご 注 文 フ ォ ー ーム</div>
+</header>
+
+<div class="layout">
+
+  <div class="menu-side" id="menu-side"></div>
+
+  <div class="order-side">
+    <div class="order-title">ご注文内容</div>
+    <div id="order-list"><div class="order-empty">まだ選択されていません</div></div>
+
+    <div class="total-box">
+      <div class="total-row">
+        <span class="total-label">点数</span>
+        <span class="total-val" id="total-count">0 点</span>
+      </div>
+      <hr class="total-divider">
+      <div class="total-row">
+        <span class="grand-label">合 計</span>
+        <span class="grand-val" id="total-price">¥0</span>
+      </div>
+      <div class="total-row" style="margin-top:4px;">
+        <span class="total-label" style="font-size:10px;">（税込）</span>
+      </div>
+    </div>
+
+    <button class="btn-reset" onclick="resetAll()">リセット</button>
+    <button class="btn-print" onclick="window.print()">🖨 注文票を印刷</button>
+  </div>
+
+</div>
+
+<script>
+const MENU = [
+  { section: '焼きとり', items: [
+    { name: 'ねぎ間',      price: 165 },
+    { name: 'にんにく間', price: 165 },
+    { name: 'とり串',      price: 220 },
+    { name: 'とり皮',      price: 165 },
+    { name: '鳥つくね',   price: 165 },
+    { name: 'カシラ',      price: 220 },
+    { name: '白もつ',      price: 165 },
+    { name: 'タン',       price: 220 },
+    { name: 'ガツ',       price: 165 },
+    { name: 'ハツ',       price: 165 },
+    { name: 'レバー',      price: 165 },
+    { name: '豚ばら',      price: 220 },
+    { name: 'ピーマン',   price: 165 },
+    { name: '長ネギ串',   price: 165 },
+    { name: '玉ねぎ串',   price: 165 },
+    { name: 'しいたけ',   price: 200 },
+  ]},
+  { section: '一品料理', items: [
+    { name: 'もろきゅう',           price: 275 },
+    { name: '枝豆',                  price: 330 },
+    { name: '冷奴',                  price: 330 },
+    { name: 'エイヒレ',              price: 550 },
+    { name: 'もつ煮',                price: 550 },
+    { name: 'ポテトフライ',          price: 550 },
+    { name: 'チーズ揚げ',            price: 550 },
+    { name: '鶏のからあげ',          price: 550 },
+    { name: '川海老のからあげ',      price: 550 },
+    { name: '揚げ出し豆腐',          price: 550 },
+    { name: '厚焼き玉子（だし/甘め）', price: 440 },
+    { name: 'ハムカツ',              price: 440 },
+    { name: 'チーズハムカツ',        price: 550 },
+    { name: 'ツナサラダ',            price: 550 },
+    { name: 'シーザーサラダ',        price: 770 },
+    { name: '海鮮カルパッチョ',      price: 880 },
+    { name: '生野菜',                price: 440 },
+  ]},
+  { section: '焼き魚', items: [
+    { name: '鯖文化干し', price: 660 },
+    { name: 'ほっけ',     price: 1100 },
+    { name: 'ししゃも',   price: 550 },
+  ]},
+  { section: '丼もの', items: [
+    { name: '親子丼',              price: 880 },
+    { name: '他人丼',              price: 880 },
+    { name: 'かつ丼',              price: 880 },
+    { name: 'チキンかつ丼',        price: 880 },
+    { name: 'チキンチーズかつ丼', price: 880 },
+  ]},
+  { section: '麺もの', items: [
+    { name: '焼きそば / うどん',       price: 660 },
+    { name: 'かけそば / うどん',       price: 660 },
+    { name: '山菜そば / うどん',       price: 715 },
+    { name: 'カレー南蛮そば / うどん', price: 880 },
+  ]},
+  { section: 'お茶漬け', items: [
+    { name: 'お茶漬け 梅',  price: 550 },
+    { name: 'お茶漬け のり', price: 550 },
+    { name: 'お茶漬け 鮭',  price: 550 },
+    { name: 'お茶漬け MIX', price: 550 },
+  ]},
+  { section: 'おにぎり', items: [
+    { name: 'おにぎり 梅',   price: 550 },
+    { name: 'おにぎり おかか', price: 550 },
+    { name: 'おにぎり 鮭',   price: 550 },
+    { name: 'おにぎり MIX',  price: 550 },
+  ]},
+  { section: '焼きおにぎり', items: [
+    { name: '焼きおにぎり 味噌',   price: 308 },
+    { name: '焼きおにぎり しょうゆ', price: 308 },
+  ]},
+];
+
+// qty state: key = "section-itemIndex"
+const qty = {};
+
+function key(si, ii) { return `${si}-${ii}`; }
+
+// Build menu DOM
+function buildMenu() {
+  const side = document.getElementById('menu-side');
+  MENU.forEach((sec, si) => {
+    const secDiv = document.createElement('div');
+    secDiv.className = 'section';
+    const title = document.createElement('div');
+    title.className = 'section-title';
+    title.textContent = sec.section;
+    secDiv.appendChild(title);
+
+    sec.items.forEach((item, ii) => {
+      const k = key(si, ii);
+      qty[k] = 0;
+
+      const row = document.createElement('div');
+      row.className = 'menu-item';
+
+      const info = document.createElement('div');
+      info.className = 'item-info';
+      info.innerHTML = `<div class="item-name">${item.name}</div>
+                        <div class="item-price">${item.price.toLocaleString()}円（税込）</div>`;
+
+      const ctrl = document.createElement('div');
+      ctrl.className = 'qty-ctrl';
+
+      const btnM = document.createElement('button');
+      btnM.className = 'qty-btn'; btnM.textContent = '−';
+      btnM.onclick = () => change(k, si, ii, -1);
+
+      const num = document.createElement('div');
+      num.className = 'qty-num'; num.id = `num-${k}`; num.textContent = '0';
+
+      const btnP = document.createElement('button');
+      btnP.className = 'qty-btn'; btnP.textContent = '+';
+      btnP.onclick = () => change(k, si, ii, +1);
+
+      ctrl.appendChild(btnM); ctrl.appendChild(num); ctrl.appendChild(btnP);
+      row.appendChild(info); row.appendChild(ctrl);
+      secDiv.appendChild(row);
+    });
+
+    side.appendChild(secDiv);
+  });
+}
+
+function change(k, si, ii, delta) {
+  qty[k] = Math.max(0, (qty[k] || 0) + delta);
+  document.getElementById(`num-${k}`).textContent = qty[k];
+  updateOrder();
+}
+
+function updateOrder() {
+  const list = document.getElementById('order-list');
+  let totalPrice = 0, totalCount = 0;
+  const rows = [];
+
+  MENU.forEach((sec, si) => {
+    sec.items.forEach((item, ii) => {
+      const k = key(si, ii);
+      const q = qty[k] || 0;
+      if (q > 0) {
+        const sub = item.price * q;
+        totalPrice += sub; totalCount += q;
+        rows.push({ name: item.name, q, sub });
+      }
+    });
+  });
+
+  if (rows.length === 0) {
+    list.innerHTML = '<div class="order-empty">まだ選択されていません</div>';
+  } else {
+    list.innerHTML = rows.map(r =>
+      `<div class="order-row">
+        <span class="order-row-name">${r.name}</span>
+        <span class="order-row-qty">×${r.q}</span>
+        <span class="order-row-sub">¥${r.sub.toLocaleString()}</span>
+      </div>`
+    ).join('');
+  }
+
+  document.getElementById('total-count').textContent = `${totalCount} 点`;
+  document.getElementById('total-price').textContent = `¥${totalPrice.toLocaleString()}`;
+}
+
+function resetAll() {
+  Object.keys(qty).forEach(k => {
+    qty[k] = 0;
+    const el = document.getElementById(`num-${k}`);
+    if (el) el.textContent = '0';
+  });
+  updateOrder();
+}
+
+buildMenu();
+</script>
+</body>
+</html>
