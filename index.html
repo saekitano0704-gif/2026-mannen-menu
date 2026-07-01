@@ -247,7 +247,6 @@
       padding: 0; 
       background: transparent; 
     }
-    /* 印刷時は注文一覧の枠制限をなくし、すべての注文を縦に広げて表示する */
     #order-list { 
       max-height: none !important; 
       overflow: visible !important; 
@@ -371,6 +370,20 @@ const MENU = [
     { name: '焼きおにぎり 味噌',   price: 308 },
     { name: '焼きおにぎり しょうゆ', price: 308 },
   ]},
+  { section: 'のんある梅酒', items: [
+    { name: 'まるで梅酒なノンアルコール（ロック/ソーダ）', price: 490 }
+  ]},
+  { section: 'ソフトドリンク', items: [
+    { name: 'コカ・コーラ',         price: 300 },
+    { name: 'ジンジャーエール',     price: 300 },
+    { name: 'オレンジジュース',     price: 300 },
+    { name: 'カルピスウォーター',   price: 300 },
+    { name: 'アセロラジュース',     price: 300 },
+    { name: 'ウーロン茶',           price: 300 },
+    { name: 'アイスコーヒー',       price: 300 },
+    { name: 'ホットコーヒー',       price: 300 },
+    { name: '青汁（水/お湯/炭酸割り）', price: 300 }
+  ]}
 ];
 
 // qty state: key = "section-itemIndex"
